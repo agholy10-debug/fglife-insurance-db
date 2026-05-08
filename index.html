@@ -3,36 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>遠雄人壽保險商品理賠查詢系統</title>
+    <title>遠雄人壽保險商品查詢系統</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Microsoft JhengHei", sans-serif;
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
             min-height: 100vh;
             color: #fff;
         }
+        
         .header {
             background: rgba(0,0,0,0.3);
             padding: 20px 40px;
             border-bottom: 1px solid rgba(255,255,255,0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
         }
-        .header h1 { font-size: 24px; margin-bottom: 5px; display: flex; align-items: center; gap: 10px; }
-        .header p { color: #8892b0; font-size: 14px; }
-        .container { display: flex; min-height: calc(100vh - 80px); }
         
-        /* 側邊欄 */
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            color: #8892b0;
+            font-size: 14px;
+        }
+        
+        .container {
+            display: flex;
+            min-height: calc(100vh - 80px);
+        }
+        
         .sidebar {
-            width: 300px;
+            width: 280px;
             background: rgba(0,0,0,0.2);
             padding: 20px;
             border-right: 1px solid rgba(255,255,255,0.1);
-            overflow-y: auto;
-            max-height: calc(100vh - 80px);
         }
+        
         .sidebar h3 {
             color: #64ffda;
             font-size: 12px;
@@ -40,7 +53,11 @@
             letter-spacing: 2px;
             margin-bottom: 15px;
         }
-        .search-box { margin-bottom: 20px; }
+        
+        .search-box {
+            margin-bottom: 25px;
+        }
+        
         .search-box input {
             width: 100%;
             padding: 12px 15px;
@@ -50,45 +67,107 @@
             color: #fff;
             font-size: 14px;
         }
-        .search-box input:focus { outline: none; border-color: #64ffda; }
         
-        /* 分類清單 */
-        .category-section { margin-bottom: 20px; }
-        .category-title {
-            font-size: 11px;
+        .search-box input::placeholder {
             color: #8892b0;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-            padding-left: 5px;
         }
-        .category-list { list-style: none; }
+        
+        .search-box input:focus {
+            outline: none;
+            border-color: #64ffda;
+        }
+        
+        .category-list {
+            list-style: none;
+        }
+        
         .category-item {
-            padding: 10px 12px;
-            margin-bottom: 3px;
-            border-radius: 6px;
+            padding: 12px 15px;
+            margin-bottom: 5px;
+            border-radius: 8px;
             cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: all 0.2s;
-            font-size: 13px;
+            transition: all 0.3s;
         }
-        .category-item:hover { background: rgba(255,255,255,0.1); }
-        .category-item.active { background: rgba(100, 255, 218, 0.15); border-left: 3px solid #64ffda; }
+        
+        .category-item:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .category-item.active {
+            background: rgba(100, 255, 218, 0.15);
+            border-left: 3px solid #64ffda;
+        }
+        
+        .category-item .name {
+            font-size: 14px;
+        }
+        
         .category-item .count {
             background: rgba(255,255,255,0.1);
             padding: 2px 8px;
-            border-radius: 10px;
+            border-radius: 12px;
             font-size: 11px;
             color: #8892b0;
         }
         
-        /* 主內容區 */
-        .main { flex: 1; padding: 25px 35px; overflow-y: auto; max-height: calc(100vh - 80px); }
+        .category-item .counts {
+            display: flex;
+            gap: 8px;
+            font-size: 11px;
+        }
         
-        /* 篩選列 */
-        .filter-bar { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
+        .category-item .現售 {
+            color: #64ffda;
+        }
+        
+        .category-item .停售 {
+            color: #ff6b6b;
+        }
+        
+        .main {
+            flex: 1;
+            padding: 25px 35px;
+            overflow-y: auto;
+            max-height: calc(100vh - 80px);
+        }
+        
+        .stats-bar {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .stat-item {
+            background: rgba(255,255,255,0.05);
+            padding: 15px 25px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .stat-item .number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #64ffda;
+        }
+        
+        .stat-item .label {
+            font-size: 12px;
+            color: #8892b0;
+            margin-top: 5px;
+        }
+        
+        .filter-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
         .filter-btn {
             padding: 8px 16px;
             border: 1px solid rgba(255,255,255,0.2);
@@ -97,13 +176,25 @@
             color: #fff;
             cursor: pointer;
             font-size: 13px;
-            transition: all 0.2s;
+            transition: all 0.3s;
         }
-        .filter-btn:hover { border-color: #64ffda; }
-        .filter-btn.active { background: #64ffda; color: #1a1a2e; border-color: #64ffda; }
         
-        /* 商品卡片 */
-        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 15px; }
+        .filter-btn:hover {
+            border-color: #64ffda;
+        }
+        
+        .filter-btn.active {
+            background: #64ffda;
+            color: #1a1a2e;
+            border-color: #64ffda;
+        }
+        
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 15px;
+        }
+        
         .product-card {
             background: rgba(255,255,255,0.03);
             border: 1px solid rgba(255,255,255,0.08);
@@ -112,54 +203,109 @@
             transition: all 0.3s;
             cursor: pointer;
         }
+        
         .product-card:hover {
             background: rgba(255,255,255,0.08);
             border-color: rgba(100, 255, 218, 0.3);
             transform: translateY(-2px);
         }
-        .product-card .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
-        .product-card .name { font-size: 14px; font-weight: 500; line-height: 1.4; flex: 1; padding-right: 10px; }
-        .product-card .code { font-size: 11px; color: #64ffda; background: rgba(100, 255, 218, 0.1); padding: 3px 8px; border-radius: 4px; margin-left: 8px; }
-        .product-card .type-tag {
+        
+        .product-card .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 0;
+            margin-bottom: 12px;
+            border: none;
+            background: transparent;
+        }
+        
+        .product-card .status {
             font-size: 10px;
-            padding: 4px 10px;
-            border-radius: 12px;
+            padding: 3px 10px;
+            border-radius: 10px;
             font-weight: bold;
-            white-space: nowrap;
+            flex-shrink: 0;
         }
-        .product-card .status-tag {
-            font-size: 10px;
-            padding: 3px 8px;
-            border-radius: 8px;
-            margin-left: 5px;
-        }
-        .status-tag.現售 { background: rgba(100, 255, 218, 0.15); color: #64ffda; }
-        .status-tag.停售 { background: rgba(255, 107, 107, 0.15); color: #ff6b6b; }
         
-        .product-card .desc { font-size: 12px; color: #8892b0; margin-bottom: 12px; line-height: 1.5; }
-        .product-card .benefits-preview { font-size: 11px; color: #aaa; }
-        .product-card .benefits-preview span { 
-            display: inline-block;
-            background: rgba(255,255,255,0.05);
-            padding: 3px 8px;
-            border-radius: 4px;
-            margin: 2px 4px 2px 0;
-            font-size: 10px;
-        }
-        .product-card .footer { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.05); }
-        .product-card .meta { font-size: 11px; color: #666; }
-        .product-card .view-btn {
-            font-size: 12px;
+        .product-card .status.現售 {
+            background: rgba(100, 255, 218, 0.2);
             color: #64ffda;
-            text-decoration: none;
-            padding: 5px 12px;
-            border: 1px solid rgba(100, 255, 218, 0.3);
-            border-radius: 6px;
-            transition: all 0.2s;
         }
-        .product-card .view-btn:hover { background: rgba(100, 255, 218, 0.15); }
         
-        /* Modal */
+        .product-card .status.停售 {
+            background: rgba(255, 107, 107, 0.2);
+            color: #ff6b6b;
+        }
+        
+        .product-card .status.附約 {
+            background: rgba(255, 215, 0, 0.2);
+            color: #ffd700;
+        }
+        
+        .product-card .name {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            line-height: 1.4;
+            flex: 1;
+            padding-right: 10px;
+        }
+        
+        .product-card .meta {
+            font-size: 11px;
+            color: #8892b0;
+        }
+        
+        .product-card .meta span {
+            margin-right: 15px;
+        }
+        
+        .product-card .size {
+            font-size: 11px;
+            color: #8892b0;
+            margin-top: 8px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            color: #8892b0;
+        }
+        
+        .empty-state .icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #8892b0;
+        }
+        
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: #64ffda;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 20px;
+            color: #1a1a2e;
+        }
+        
+        .back-to-top.show {
+            opacity: 1;
+        }
+        
         .modal {
             display: none;
             position: fixed;
@@ -167,175 +313,105 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.85);
+            background: rgba(0,0,0,0.9);
             z-index: 1000;
             justify-content: center;
-            align-items: flex-start;
-            padding: 20px;
-            overflow-y: auto;
+            align-items: center;
         }
-        .modal.show { display: flex; }
+        
+        .modal.show {
+            display: flex;
+        }
+        
         .modal-content {
-            width: 100%;
-            max-width: 800px;
+            width: 90%;
+            height: 90%;
             background: #1a1a2e;
-            border-radius: 16px;
+            border-radius: 15px;
             overflow: hidden;
-            margin: 20px auto;
+            position: relative;
         }
+        
         .modal-header {
-            padding: 20px 25px;
-            background: rgba(0,0,0,0.3);
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 15px 20px;
+            background: rgba(0,0,0,0.8);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            z-index: 10;
         }
-        .modal-header h2 { font-size: 18px; display: flex; align-items: center; gap: 10px; }
-        .modal-header .close {
+        
+        .modal-header h4 {
+            font-size: 14px;
+            max-width: 80%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .modal-close {
             background: none;
             border: none;
             color: #fff;
-            font-size: 28px;
+            font-size: 24px;
             cursor: pointer;
             padding: 5px 10px;
-            opacity: 0.7;
-        }
-        .modal-header .close:hover { opacity: 1; }
-        .modal-body { padding: 25px; }
-        
-        /* 商品詳情 */
-        .detail-section { margin-bottom: 25px; }
-        .detail-section h4 {
-            font-size: 13px;
-            color: #64ffda;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 12px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid rgba(100, 255, 218, 0.2);
-        }
-        .detail-section h4 .icon { margin-right: 8px; }
-        
-        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
-        .info-item {
-            background: rgba(255,255,255,0.03);
-            padding: 12px 15px;
-            border-radius: 8px;
-            border-left: 3px solid #64ffda;
-        }
-        .info-item .label { font-size: 11px; color: #8892b0; margin-bottom: 5px; }
-        .info-item .value { font-size: 14px; font-weight: 500; }
-        
-        /* 理賠項目表 */
-        .benefits-table { width: 100%; border-collapse: collapse; }
-        .benefits-table th {
-            text-align: left;
-            padding: 10px 12px;
-            background: rgba(255,255,255,0.05);
-            font-size: 11px;
-            color: #8892b0;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .benefits-table td {
-            padding: 12px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            font-size: 13px;
-        }
-        .benefits-table tr:hover td { background: rgba(255,255,255,0.02); }
-        .benefits-table .amount { color: #64ffda; font-weight: 500; }
-        .benefits-table .note { color: #888; font-size: 11px; }
-        
-        /* 理算範例 */
-        .calc-example {
-            background: rgba(100, 255, 218, 0.05);
-            border: 1px solid rgba(100, 255, 218, 0.2);
-            border-radius: 10px;
-            padding: 15px;
-            margin-top: 15px;
-        }
-        .calc-example h5 { font-size: 12px; color: #64ffda; margin-bottom: 10px; }
-        .calc-example .scenario { font-size: 12px; color: #aaa; margin-bottom: 10px; padding: 8px; background: rgba(0,0,0,0.2); border-radius: 6px; }
-        .calc-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .calc-row.total { border-bottom: none; font-weight: bold; color: #64ffda; font-size: 14px; padding-top: 10px; }
-        .scenario-note { font-size: 11px; color: #8892b0; margin-top: 10px; padding-top: 8px; border-top: 1px dashed rgba(100,255,218,0.2); }
-        .calc-row.total span:last-child { color: #64ffda; }
-        
-        /* 涵蓋傷病標籤 */
-        .conditions-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-        .condition-tag { 
-            background: rgba(150, 100, 255, 0.15); 
-            color: #b264ff; 
-            padding: 5px 12px; 
-            border-radius: 15px; 
-            font-size: 12px;
-            border: 1px solid rgba(150, 100, 255, 0.3);
         }
         
-        /* 警告提示 */
-        .warning-box {
-            background: rgba(255, 215, 0, 0.1);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            border-radius: 8px;
-            padding: 12px 15px;
-            font-size: 12px;
-            color: #ffd700;
-            margin-top: 15px;
-        }
-        .warning-box strong { color: #ffd700; }
-        
-        /* 按鈕 */
-        .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            background: #64ffda;
-            color: #1a1a2e;
+        .modal iframe {
+            width: 100%;
+            height: 100%;
             border: none;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            text-decoration: none;
-            transition: all 0.2s;
+            margin-top: 60px;
         }
-        .btn:hover { background: #4de8c7; transform: translateY(-1px); }
-        .btn-outline {
-            background: transparent;
-            border: 1px solid rgba(100, 255, 218, 0.3);
-            color: #64ffda;
-        }
-        .btn-outline:hover { background: rgba(100, 255, 218, 0.1); }
-        
-        /* 空狀態 */
-        .empty-state { text-align: center; padding: 60px; color: #8892b0; }
-        .empty-state .icon { font-size: 48px; margin-bottom: 15px; }
-        .loading { text-align: center; padding: 40px; color: #8892b0; }
-        
-        /* 狀態標籤 */
-        .type-tag.實支實付 { background: rgba(100, 255, 218, 0.15); color: #64ffda; }
-        .type-tag.日額型 { background: rgba(255, 215, 0, 0.15); color: #ffd700; }
-        .type-tag.手術醫療 { background: rgba(255, 107, 107, 0.15); color: #ff6b6b; }
-        .type-tag.癌症險 { background: rgba(255, 100, 150, 0.15); color: #ff64b4; }
-        .type-tag.特定傷病 { background: rgba(150, 100, 255, 0.15); color: #b264ff; }
-        .type-tag.重大疾病 { background: rgba(150, 100, 255, 0.15); color: #b264ff; }
-        .type-tag.長期照護 { background: rgba(100, 200, 255, 0.15); color: #64c8ff; }
-        .type-tag.意外醫療 { background: rgba(255, 165, 100, 0.15); color: #ffa564; }
-        .type-tag.海外突發疾病 { background: rgba(100, 255, 200, 0.15); color: #64ffc8; }
-        .type-tag.壽險 { background: rgba(200, 200, 200, 0.15); color: #ccc; }
-        .type-tag.年金 { background: rgba(255, 200, 100, 0.15); color: #ffc864; }
-        .type-tag.還本 { background: rgba(100, 200, 150, 0.15); color: #64c896; }
-        .type-tag.投資型 { background: rgba(150, 150, 255, 0.15); color: #9696ff; }
-        .type-tag.團險 { background: rgba(255, 150, 100, 0.15); color: #ff9664; }
-        .type-tag.醫療保本 { background: rgba(100, 255, 150, 0.15); color: #64ff96; }
-        .type-tag.其他 { background: rgba(200, 200, 200, 0.15); color: #ccc; }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>🏦 遠雄人壽保險商品理賠查詢系統</h1>
-        <p>共 <span id="total-count">0</span> 個商品 | 點選商品查看詳細理賠項目</p>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+                <h1>🏦 遠雄人壽保險商品查詢系統</h1>
+                <p>共 <span id="total-count">0</span> 個商品 | 現售 + 停售完整收錄</p>
+            </div>
+            <div id="user-info" style="display:none; align-items:center; gap:10px;">
+                <span style="color:#64ffda;">👤 <span id="username-display"></span></span>
+                <button onclick="logout()" style="color:#ff6b6b; background:none; border:1px solid #ff6b6b; padding:8px 16px; border-radius:6px; cursor:pointer;">登出</button>
+            </div>
+        </div>
     </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://sb-publishable-oxx6od0qh3h-xdo-xwgmspe-q-sswio9u4.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNiLXB1Ymxpc2hhYmxlLW94eDZvZDBxaDNoLWRvLXh3Z21zcGUtcS1zc3dpbzluNCIsImlhdCI6MTY0NDM0OTIwMCwiZXhwIjoxOTU5OTM1MjAwfQ.xxxx';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        
+        async function checkAuth() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                window.location.href = 'login.html';
+                return;
+            }
+            // 從 email 取出使用者名稱
+            const email = session.user.email;
+            const username = email.split('@')[0];
+            document.getElementById('username-display').textContent = username;
+            document.getElementById('user-info').style.display = 'flex';
+        }
+        
+        async function logout() {
+            await supabase.auth.signOut();
+            localStorage.removeItem('fglife_session');
+            window.location.href = 'login.html';
+        }
+        
+        checkAuth();
+    </script>
     
     <div class="container">
         <div class="sidebar">
@@ -343,68 +419,18 @@
                 <input type="text" id="search-input" placeholder="🔍 搜尋商品...">
             </div>
             
-            <div class="category-section">
-                <div class="category-title">依狀態</div>
-                <ul class="category-list" id="status-list">
-                    <li class="category-item active" data-filter="all">
-                        <span>全部商品</span>
-                        <span class="count" id="count-all">0</span>
-                    </li>
-                    <li class="category-item" data-filter="現售">
-                        <span>💼 現售</span>
-                        <span class="count" id="count-onsale">0</span>
-                    </li>
-                    <li class="category-item" data-filter="停售">
-                        <span>📦 停售</span>
-                        <span class="count" id="count-discontinued">0</span>
-                    </li>
-                </ul>
-            </div>
-            
-            <div class="category-section">
-                <div class="category-title">理賠類型</div>
-                <ul class="category-list" id="claim-type-list">
-                    <li class="category-item active" data-claim="all">
-                        <span>全部</span>
-                        <span class="count" id="claim-count-all">0</span>
-                    </li>
-                    <li class="category-item" data-claim="實支實付">
-                        <span>實支實付</span>
-                        <span class="count" id="claim-count-實支實付">0</span>
-                    </li>
-                    <li class="category-item" data-claim="日額型">
-                        <span>日額型</span>
-                        <span class="count" id="claim-count-日額型">0</span>
-                    </li>
-                    <li class="category-item" data-claim="手術">
-                        <span>手術醫療</span>
-                        <span class="count" id="claim-count-手術">0</span>
-                    </li>
-                    <li class="category-item" data-claim="癌症">
-                        <span>癌症險</span>
-                        <span class="count" id="claim-count-癌症">0</span>
-                    </li>
-                    <li class="category-item" data-claim="特定傷病">
-                        <span>特定傷病</span>
-                        <span class="count" id="claim-count-特定傷病">0</span>
-                    </li>
-                    <li class="category-item" data-claim="重大疾病">
-                        <span>重大疾病</span>
-                        <span class="count" id="claim-count-重大疾病">0</span>
-                    </li>
-                    <li class="category-item" data-claim="長照">
-                        <span>長期照護</span>
-                        <span class="count" id="claim-count-長照">0</span>
-                    </li>
-                    <li class="category-item" data-claim="意外">
-                        <span>意外醫療</span>
-                        <span class="count" id="claim-count-意外">0</span>
-                    </li>
-                </ul>
-            </div>
+            <h3>商品分類</h3>
+            <ul class="category-list" id="category-list">
+                <li class="category-item active" data-category="">
+                    <span class="name">全部商品</span>
+                    <span class="count" id="all-count">0</span>
+                </li>
+            </ul>
         </div>
         
         <div class="main">
+            <div class="stats-bar" id="stats-bar"></div>
+            
             <div class="filter-bar">
                 <button class="filter-btn active" data-filter="all">全部</button>
                 <button class="filter-btn" data-filter="現售">現售</button>
@@ -419,492 +445,184 @@
         </div>
     </div>
     
-    <!-- 商品詳情 Modal -->
-    <div class="modal" id="product-modal">
+    <div class="back-to-top" onclick="window.scrollTo({top:0})">↑</div>
+    
+    <div class="modal" id="pdf-modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 id="modal-title">商品詳情</h2>
-                <button class="close" onclick="closeModal()">×</button>
+                <h4 id="modal-title">PDF 檢視</h4>
+                <button class="modal-close" onclick="closeModal()">×</button>
             </div>
-            <div class="modal-body" id="modal-body">
-                <!-- 動態內容 -->
-            </div>
+            <iframe id="pdf-frame"></iframe>
         </div>
     </div>
     
     <script>
         let allProducts = [];
-        let claimsDb = {};
-        let currentStatus = 'all';
-        let currentClaimType = 'all';
         let currentFilter = 'all';
+        let currentCategory = '';
         
-        // 載入資料
-        async function loadData() {
-            try {
-                const [productsRes, claimsRes] = await Promise.all([
-                    fetch('data/products.json'),
-                    fetch('data/claims_db.json')
-                ]);
-                allProducts = await productsRes.json();
-                claimsDb = await claimsRes.json();
-                updateStats();
-                renderProducts();
-            } catch (e) {
-                console.error('載入失敗:', e);
-                document.getElementById('products-grid').innerHTML = '<div class="empty-state"><div class="icon">❌</div><p>資料載入失敗</p></div>';
-            }
-        }
-        
-        // 更新統計
-        function updateStats() {
-            const 現售 = allProducts.filter(p => p.status === '現售').length;
-            const 停售 = allProducts.filter(p => p.status === '停售').length;
-            const 總數 = allProducts.length;
+        // 載入分類統計
+        async function loadCategories() {
+            const res = await fetch('./data/products.json');
+            const allProducts = await res.json();
             
-            document.getElementById('total-count').textContent = 總數;
-            document.getElementById('count-all').textContent = 總數;
-            document.getElementById('count-onsale').textContent = 現售;
-            document.getElementById('count-discontinued').textContent = 停售;
-            
-            // 理賠類型統計
-            const claimCounts = { 'all': 總數, '實支實付': 0, '日額型': 0, '手術': 0, '癌症': 0, '特定傷病': 0, '重大疾病': 0, '長照': 0, '意外': 0 };
-            
-            for (const [code, info] of Object.entries(claimsDb.products || {})) {
-                const type = info.type || '其他';
-                if (type.includes('實支') || type === '實支實付') claimCounts['實支實付']++;
-                else if (type.includes('日額') || type === '日額型') claimCounts['日額型']++;
-                else if (type.includes('手術')) claimCounts['手術']++;
-                else if (type.includes('癌症')) claimCounts['癌症']++;
-                else if (type.includes('特定傷病')) claimCounts['特定傷病']++;
-                else if (type.includes('重大')) claimCounts['重大疾病']++;
-                else if (type.includes('長照')) claimCounts['長照']++;
-                else if (type.includes('意外')) claimCounts['意外']++;
-            }
-            
-            document.getElementById('claim-count-all').textContent = claimCounts['all'];
-            document.getElementById('claim-count-實支實付').textContent = claimCounts['實支實付'];
-            document.getElementById('claim-count-日額型').textContent = claimCounts['日額型'];
-            document.getElementById('claim-count-手術').textContent = claimCounts['手術'];
-            document.getElementById('claim-count-癌症').textContent = claimCounts['癌症'];
-            document.getElementById('claim-count-特定傷病').textContent = claimCounts['特定傷病'];
-            document.getElementById('claim-count-重大疾病').textContent = claimCounts['重大疾病'];
-            document.getElementById('claim-count-長照').textContent = claimCounts['長照'];
-            document.getElementById('claim-count-意外').textContent = claimCounts['意外'];
-        }
-        
-        // 取得商品代碼
-        function getProductCode(filename) {
-            return filename.split('_')[0];
-        }
-        
-        // 取得理賠資訊
-        function getClaimsInfo(filename) {
-            const code = getProductCode(filename);
-            
-            // 嘗試精確匹配
-            for (const [key, info] of Object.entries(claimsDb.products || {})) {
-                if (key.includes(code) || filename.includes(key.split('_')[0])) {
-                    return info;
+            // 統計分類
+            const stats = {};
+            allProducts.forEach(p => {
+                if (!stats[p.category]) {
+                    stats[p.category] = { 現售: { 主約: 0, 附約: 0 }, 停售: { 主約: 0, 附約: 0 } };
                 }
+                stats[p.category][p.status][p.type]++;
+            });
+            
+            const total = allProducts.length;
+            document.getElementById('total-count').textContent = total;
+            document.getElementById('all-count').textContent = total;
+            
+            const list = document.getElementById('category-list');
+            const statsBar = document.getElementById('stats-bar');
+            
+            let html = `
+                <li class="category-item active" data-category="">
+                    <span class="name">全部商品</span>
+                    <span class="count">${total}</span>
+                </li>
+            `;
+            
+            let statsHtml = `
+                <div class="stat-item">
+                    <div class="number">${total}</div>
+                    <div class="label">總商品數</div>
+                </div>
+            `;
+            
+            for (const [cat, counts] of Object.entries(stats)) {
+                const 現售 = counts.現售.主約 + counts.現售.附約;
+                const 停售 = counts.停售.主約 + counts.停售.附約;
+                const catTotal = 現售 + 停售;
+                
+                html += `
+                    <li class="category-item" data-category="${cat}">
+                        <span class="name">${cat}</span>
+                        <div class="counts">
+                            <span class="現售">現${現售}</span>
+                            <span class="停售">停${停售}</span>
+                        </div>
+                    </li>
+                `;
+                
+                statsHtml += `
+                    <div class="stat-item">
+                        <div class="number">${catTotal}</div>
+                        <div class="label">${cat}</div>
+                    </div>
+                `;
             }
             
-            // 回傳預設資訊
-            const prod = allProducts.find(p => p.filename === filename);
-            const cat = prod?.category || '其他';
-            return {
-                name: filename.replace('.pdf', ''),
-                type: cat,
-                description: '點選查看詳細理賠項目'
-            };
+            list.innerHTML = html;
+            statsBar.innerHTML = statsHtml;
+            
+            // 綁定分類點擊事件
+            document.querySelectorAll('.category-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    document.querySelectorAll('.category-item').forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+                    currentCategory = item.dataset.category;
+                    loadProducts(allProducts);
+                });
+            });
         }
         
-        // 取得類型標籤class
-        function getTypeClass(type) {
-            if (type.includes('實支') || type === '實支實付') return '實支實付';
-            if (type.includes('日額')) return '日額型';
-            if (type.includes('手術')) return '手術醫療';
-            if (type.includes('癌症')) return '癌症險';
-            if (type.includes('特定傷病')) return '特定傷病';
-            if (type.includes('重大')) return '重大疾病';
-            if (type.includes('長照')) return '長期照護';
-            if (type.includes('意外')) return '意外醫療';
-            if (type.includes('壽')) return '壽險';
-            if (type.includes('年金')) return '年金';
-            if (type.includes('還本')) return '還本';
-            if (type.includes('投資')) return '投資型';
-            if (type.includes('團')) return '團險';
-            return '其他';
+        // 載入商品列表
+        async function loadProducts(allProducts) {
+            const grid = document.getElementById('products-grid');
+            grid.innerHTML = '<div class="loading">載入中...</div>';
+            
+            if (!allProducts) {
+                const res = await fetch('./data/products.json');
+                allProducts = await res.json();
+            }
+            
+            window.allProducts = allProducts;
+            renderProducts();
         }
         
         // 篩選商品
         function filterProducts() {
-            let filtered = [...allProducts];
-            const searchValue = document.getElementById('search-input').value.toLowerCase();
-            
-            // 狀態篩選
-            if (currentStatus !== 'all') {
-                filtered = filtered.filter(p => p.status === currentStatus);
-            }
-            
-            // 理賠類型篩選
-            if (currentClaimType !== 'all') {
-                filtered = filtered.filter(p => {
-                    const claims = getClaimsInfo(p.filename);
-                    const type = claims.type || '';
-                    if (currentClaimType === '實支實付') return type.includes('實支');
-                    if (currentClaimType === '日額型') return type.includes('日額');
-                    if (currentClaimType === '手術') return type.includes('手術');
-                    if (currentClaimType === '癌症') return type.includes('癌症');
-                    if (currentClaimType === '特定傷病') return type.includes('特定傷病');
-                    if (currentClaimType === '重大疾病') return type.includes('重大');
-                    if (currentClaimType === '長照') return type.includes('長照');
-                    if (currentClaimType === '意外') return type.includes('意外');
-                    return true;
-                });
-            }
-            
-            // 一般篩選
-            if (currentFilter !== 'all') {
-                if (currentFilter === '現售') filtered = filtered.filter(p => p.status === '現售');
-                else if (currentFilter === '停售') filtered = filtered.filter(p => p.status === '停售');
-                else if (currentFilter === '主約') filtered = filtered.filter(p => !p.is_rider);
-                else if (currentFilter === '附約') filtered = filtered.filter(p => p.is_rider);
-            }
-            
-            // 搜尋
-            if (searchValue) {
-                filtered = filtered.filter(p => p.filename.toLowerCase().includes(searchValue));
-            }
-            
-            return filtered;
+            renderProducts();
         }
         
-        // 渲染商品列表
         function renderProducts() {
             const grid = document.getElementById('products-grid');
-            const filtered = filterProducts();
+            const searchValue = document.getElementById('search-input').value.toLowerCase();
+            
+            let filtered = allProducts;
+            
+            // 狀態篩選
+            if (currentFilter === '現售' || currentFilter === '停售') {
+                filtered = filtered.filter(p => p.status === currentFilter);
+            } else if (currentFilter === '主約') {
+                filtered = filtered.filter(p => !p.is_rider);
+            } else if (currentFilter === '附約') {
+                filtered = filtered.filter(p => p.is_rider);
+            }
+            
+            // 搜尋篩選
+            if (searchValue) {
+                filtered = filtered.filter(p => 
+                    p.filename.toLowerCase().includes(searchValue)
+                );
+            }
             
             if (filtered.length === 0) {
-                grid.innerHTML = '<div class="empty-state"><div class="icon">📭</div><p>找不到符合條件的商品</p></div>';
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">📭</div>
+                        <p>找不到符合條件的商品</p>
+                    </div>
+                `;
                 return;
             }
             
             grid.innerHTML = filtered.map(p => {
-                const claims = getClaimsInfo(p.filename);
-                const typeClass = getTypeClass(claims.type || p.category);
-                const code = getProductCode(p.filename);
-                const displayName = p.filename.replace('.pdf','').substring(code.length + 1);
-                
-                // 取得理賠項目預覽
-                let benefitsPreview = '';
-                if (claims.benefits) {
-                    const keys = Object.keys(claims.benefits).slice(0, 3);
-                    benefitsPreview = keys.map(k => `<span>${k}</span>`).join('');
-                } else if (claims.description) {
-                    benefitsPreview = `<span>${p.category}</span>`;
-                }
+                const sizeKB = Math.round(p.filesize / 1024);
+                const sizeStr = sizeKB > 1024 ? `${(sizeKB/1024).toFixed(1)} MB` : `${sizeKB} KB`;
+                const pdfUrl = p.filepath.replace('/mnt/c/Users/holya/insurance-db/documents/fglife/', '');
                 
                 return `
-                    <div class="product-card" onclick="showProductDetail('${code}')">
+                    <div class="product-card" onclick="openPdf('${encodeURIComponent(pdfUrl)}', '${p.filename.replace(/'/g, "\\'")}')">
                         <div class="header">
-                            <div class="name">
-                                ${displayName}
-                                <span class="code">${code}</span>
-                            </div>
-                            <span class="status-tag ${p.status}">${p.status}</span>
+                            <div class="name">${p.filename.replace('.pdf','')}</div>
+                            <span class="status ${p.status}">${p.status}</span>
                         </div>
-                        <div style="margin-bottom: 8px;">
-                            <span class="type-tag ${typeClass}">${claims.type || p.category}</span>
+                        <div class="meta">
+                            <span>📁 ${p.category}</span>
+                            <span>📋 ${p.type}</span>
                         </div>
-                        <div class="benefits-preview">${benefitsPreview || '<span>' + p.category + '</span>'}</div>
-                        <div class="footer">
-                            <span class="meta">📁 ${p.category} | ${p.type}</span>
-                            <span class="view-btn">查看理賠 →</span>
-                        </div>
+                        <div class="size">📦 ${sizeStr}</div>
                     </div>
                 `;
             }).join('');
         }
         
-        // 顯示商品詳情
-        function showProductDetail(productCode) {
-            // 找到商品
-            const product = allProducts.find(p => getProductCode(p.filename) === productCode);
-            if (!product) {
-                console.error('找不到商品:', productCode);
-                return;
-            }
+        // 開啟 PDF
+        function openPdf(encodedPath, title) {
+            const modal = document.getElementById('pdf-modal');
+            const frame = document.getElementById('pdf-frame');
+            const titleEl = document.getElementById('modal-title');
             
-            const claims = getClaimsInfo(product.filename);
-            const modal = document.getElementById('product-modal');
-            const body = document.getElementById('modal-body');
-            const title = document.getElementById('modal-title');
-            
-            const typeClass = getTypeClass(claims.type || product.category);
-            title.innerHTML = `
-                <span class="type-tag ${typeClass}">${claims.type || product.category}</span>
-                ${product.filename.replace('.pdf','')}
-            `;
-            
-            let html = `
-                <div class="detail-section">
-                    <h4><span class="icon">📋</span>基本資訊</h4>
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <div class="label">商品代碼</div>
-                            <div class="value">${getProductCode(product.filename)}</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="label">商品類型</div>
-                            <div class="value">${product.category}</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="label">承保型態</div>
-                            <div class="value">${product.type}</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="label">銷售狀態</div>
-                            <div class="value" style="color: ${product.status === '現售' ? '#64ffda' : '#ff6b6b'}">${product.status}</div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            // 理賠項目
-            if (claims.benefits) {
-                html += `
-                    <div class="detail-section">
-                        <h4><span class="icon">💰</span>理賠項目</h4>
-                        <table class="benefits-table">
-                            <thead>
-                                <tr>
-                                    <th>給付項目</th>
-                                    <th>金額/計算方式</th>
-                                    <th>說明</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                `;
-                
-                for (const [name, info] of Object.entries(claims.benefits)) {
-                    html += `
-                        <tr>
-                            <td>${name}</td>
-                            <td class="amount">${info.amount || info.calculation || '-'}</td>
-                            <td class="note">${info.note || ''}</td>
-                        </tr>
-                    `;
-                }
-                
-                html += `
-                            </tbody>
-                        </table>
-                `;
-                
-                // 長期住院增額
-                if (claims.benefits['住院醫療費用保險金']?.long_hospitalization) {
-                    html += `
-                        <div style="margin-top: 15px;">
-                            <h5 style="font-size: 12px; color: #8892b0; margin-bottom: 10px;">📊 長期住院增額</h5>
-                            <div class="info-grid">
-                    `;
-                    for (const [days, amount] of Object.entries(claims.benefits['住院醫療費用保險金'].long_hospitalization)) {
-                        html += `
-                            <div class="info-item">
-                                <div class="label">${days}天</div>
-                                <div class="value">${amount}</div>
-                            </div>
-                        `;
-                    }
-                    html += '</div></div>';
-                }
-                
-                // 理算範例（根據不同類型顯示不同情境）
-                if (claims.claims_calculation) {
-                    const calc = claims.claims_calculation;
-                    html += `
-                        <div class="calc-example">
-                            <h5>💡 理算範例</h5>
-                    `;
-                    
-                    if (calc.type === '實支實付') {
-                        html += `
-                            <div class="scenario">
-                                <strong>情境：</strong>住院10天（5天一般病房 + 5天加護病房），闌尾切除術，手術費用收據 80,000元
-                            </div>
-                            <div class="calc-row"><span>每日病房費用保險金</span><span>1,000 × 10天 = 10,000</span></div>
-                            <div class="calc-row"><span>加護病房費用保險金</span><span>3,000 × 5天 = 15,000</span></div>
-                            <div class="calc-row"><span>手術費用保險金（闌尾切除術60%）</span><span>50,000 × 60% = 30,000</span></div>
-                            <div class="calc-row"><span>出院在家療癒保險金</span><span>600 × 10天 = 6,000</span></div>
-                            <div class="calc-row total"><span>合計理賠</span><span>61,000元</span></div>
-                            <div class="scenario-note">💰 說明：副本收據理賠，花費範圍內實支實付</div>
-                        `;
-                    } else if (calc.type === '日額型') {
-                        html += `
-                            <div class="scenario">
-                                <strong>情境：</strong>住院10天（5天一般病房 + 5天加護病房），闌尾切除術
-                            </div>
-                            <div class="calc-row"><span>住院醫療保險金（30天內1倍）</span><span>1,000 × 10天 = 10,000</span></div>
-                            <div class="calc-row"><span>加護病房暨燒燙傷中心（2倍）</span><span>1,000 × 2倍 × 5天 = 10,000</span></div>
-                            <div class="calc-row"><span>住院醫療補助保險金（50%）</span><span>1,000 × 50% × 10天 = 5,000</span></div>
-                            <div class="calc-row"><span>住院前後門診保險金</span><span>1,000 × 25% × 7天 = 1,750</span></div>
-                            <div class="calc-row"><span>手術費用保險金（闌尾切除術8倍）</span><span>1,000 × 8倍 = 8,000</span></div>
-                            <div class="calc-row total"><span>合計理賠</span><span>34,750元</span></div>
-                            <div class="scenario-note">💰 說明：日額型為固定金額理赔，不看實際花費</div>
-                        `;
-                    } else if (calc.type === '手術倍數型') {
-                        html += `
-                            <div class="scenario">
-                                <strong>情境：</strong>門診接受闌尾切除術
-                            </div>
-                            <div class="calc-row"><span>門診手術保險金（闌尾切除術8倍）</span><span>1,000 × 8倍 = 8,000</span></div>
-                            <div class="calc-row total"><span>合計理賠</span><span>8,000元</span></div>
-                            <div class="scenario-note">💰 說明：手術倍數型理赔，手術項目決定倍數</div>
-                        `;
-                    } else if (calc.type.includes('癌症一次給付')) {
-                        html += `
-                            <div class="scenario">
-                                <strong>情境：</strong>確診肺癌（初次罹癌），住院15天接受手術及化療
-                            </div>
-                            <div class="calc-row"><span>初次罹癌保險金（確診一次給付）</span><span>1,000 × 100倍 = 100,000</span></div>
-                            <div class="calc-row"><span>癌症住院醫療保險金</span><span>1,000 × 1% × 15天 = 1,500</span></div>
-                            <div class="calc-row"><span>癌症手術保險金（假設20倍）</span><span>1,000 × 20倍 = 20,000</span></div>
-                            <div class="calc-row"><span>癌症化學治療保險金（2次化療）</span><span>1,000 × 1倍 × 2 = 2,000</span></div>
-                            <div class="calc-row total"><span>合計理賠</span><span>123,500元</span></div>
-                            <div class="scenario-note">💰 說明：癌症險確診即給100倍+後續治療費用</div>
-                        `;
-                    } else if (calc.type.includes('一次給付型')) {
-                        html += `
-                            <div class="scenario">
-                                <strong>情境：</strong>確診急性心肌梗塞（七大重疾之一）
-                            </div>
-                            <div class="calc-row"><span>重大疾病保險金（確診一次給付）</span><span>1,000 × 100倍 = 100,000</span></div>
-                            <div class="calc-row total"><span>合計理賠</span><span>100,000元</span></div>
-                            <div class="scenario-note">💰 說明：一次給付型，確診即給固定倍數</div>
-                        `;
-                    } else if (calc.type === '長照型') {
-                        html += `
-                            <div class="scenario">
-                                <strong>情境：</strong>符合長期照顧狀態（意識障礙、無法自行翻身）
-                            </div>
-                            <div class="calc-row"><span>一次性長期照顧保險金</span><span>1,000 × 30倍 = 30,000</span></div>
-                            <div class="calc-row"><span>每月長期照顧保險金（持續符合狀態）</span><span>1,000 × 30日 = 30,000/月</span></div>
-                            <div class="calc-row total"><span>首月理賠</span><span>60,000元</span></div>
-                            <div class="scenario-note">💰 說明：長照型需符合6項長照狀態之一，持續理赔</div>
-                        `;
-                    } else if (calc.type.includes('保本')) {
-                        html += `
-                            <div class="scenario">
-                                <strong>情境：</strong>住院10天，闌尾切除術，繳費期滿
-                            </div>
-                            <div class="calc-row"><span>住院醫療保險金</span><span>1,000 × 10天 = 10,000</span></div>
-                            <div class="calc-row"><span>加護病房保險金</span><span>1,000 × 2倍 × 5天 = 10,000</span></div>
-                            <div class="calc-row"><span>手術費用保險金（8倍）</span><span>1,000 × 8倍 = 8,000</span></div>
-                            <div class="calc-row"><span>滿期保險金（退還保費）</span><span>已繳保費 × 1.06倍</span></div>
-                            <div class="calc-row total"><span>醫療理賠</span><span>28,000元 + 保本</span></div>
-                            <div class="scenario-note">💰 說明：保本型除了醫療理赔，期滿還退還保費</div>
-                        `;
-                    } else {
-                        html += `
-                            <div class="scenario">
-                                <strong>情境：</strong>住院10天，闌尾切除術
-                            </div>
-                            <div class="calc-row"><span>住院醫療保險金</span><span>1,000 × 10天 = 10,000</span></div>
-                            <div class="calc-row"><span>手術費用保險金（8倍）</span><span>1,000 × 8倍 = 8,000</span></div>
-                            <div class="calc-row total"><span>合計理賠</span><span>18,000元</span></div>
-                        `;
-                    }
-                    
-                    html += '</div>';
-                }
-                
-                // 警告
-                if (claims.claims_calculation?.type === '實支實付') {
-                    html += `
-                        <div class="warning-box">
-                            <strong>⚠️ 重要提醒：</strong>實支實付型商品需檢附收據正本申請理賠，副本可能無法受理。
-                        </div>
-                    `;
-                }
-                
-                html += '</div>';
-            } else {
-                html += `
-                    <div class="detail-section">
-                        <h4><span class="icon">📄</span>商品說明</h4>
-                        <div class="info-item" style="grid-column: 1 / -1;">
-                            <div class="value">${claims.description || '點選前往遠雄人壽官網下載保單條款 PDF 查看詳細理賠項目'}</div>
-                        </div>
-                    </div>
-                `;
-            }
-            
-            // 手術表
-            if (claims.surgery_rates || claims.surgery_multipliers) {
-                const surgeryData = claims.surgery_rates || claims.surgery_multipliers;
-                html += `
-                    <div class="detail-section">
-                        <h4><span class="icon">🏥</span>手術參考表（常見手術）</h4>
-                        <table class="benefits-table">
-                            <thead>
-                                <tr>
-                                    <th>手術項目</th>
-                                    <th>${claims.surgery_rates ? '百分率' : '倍數'}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                `;
-                for (const [name, rate] of Object.entries(surgeryData)) {
-                    if (name !== 'url') {
-                        html += `<tr><td>${name}</td><td class="amount">${rate}</td></tr>`;
-                    }
-                }
-                html += '</tbody></table></div>';
-            }
-            
-            // 涵蓋傷病/疾病（特定傷病、重大疾病、癌症險）
-            if (claims.covered_conditions) {
-                html += `
-                    <div class="detail-section">
-                        <h4><span class="icon">📋</span>涵蓋傷病項目</h4>
-                        <div class="conditions-grid">
-                `;
-                claims.covered_conditions.forEach(condition => {
-                    html += `<span class="condition-tag">${condition}</span>`;
-                });
-                html += '</div></div>';
-            }
-            
-            // 長照狀態
-            if (claims.long_term_care_conditions) {
-                html += `
-                    <div class="detail-section">
-                        <h4><span class="icon">🛏️</span>長期照顧狀態（符合任一項即可）</h4>
-                        <div class="conditions-grid">
-                `;
-                claims.long_term_care_conditions.forEach(condition => {
-                    html += `<span class="condition-tag">${condition}</span>`;
-                });
-                html += '</div></div>';
-            }
-            
-            // 下載連結
-            html += `
-                <div class="detail-section" style="text-align: center; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1);">
-                    <a href="https://www.fglife.com.tw/initGoodsTermsO.html" target="_blank" class="btn">
-                        📥 前往遠雄官網下載保單條款
-                    </a>
-                </div>
-            `;
-            
-            body.innerHTML = html;
+            frame.src = `/pdf/${encodedPath}`;
+            titleEl.textContent = title;
             modal.classList.add('show');
         }
         
         // 關閉 Modal
         function closeModal() {
-            document.getElementById('product-modal').classList.remove('show');
+            const modal = document.getElementById('pdf-modal');
+            const frame = document.getElementById('pdf-frame');
+            modal.classList.remove('show');
+            frame.src = '';
         }
         
         // 事件監聽
@@ -913,33 +631,12 @@
                 document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 currentFilter = btn.dataset.filter;
-                renderProducts();
+                filterProducts();
             });
         });
         
-        // 側邊欄篩選
-        document.getElementById('status-list').addEventListener('click', e => {
-            const item = e.target.closest('.category-item');
-            if (item) {
-                document.querySelectorAll('#status-list .category-item').forEach(i => i.classList.remove('active'));
-                item.classList.add('active');
-                currentStatus = item.dataset.filter;
-                renderProducts();
-            }
-        });
-        
-        document.getElementById('claim-type-list').addEventListener('click', e => {
-            const item = e.target.closest('.category-item');
-            if (item) {
-                document.querySelectorAll('#claim-type-list .category-item').forEach(i => i.classList.remove('active'));
-                item.classList.add('active');
-                currentClaimType = item.dataset.claim;
-                renderProducts();
-            }
-        });
-        
         document.getElementById('search-input').addEventListener('input', () => {
-            renderProducts();
+            filterProducts();
         });
         
         // ESC 關閉 Modal
@@ -947,13 +644,8 @@
             if (e.key === 'Escape') closeModal();
         });
         
-        // 點擊背景關閉
-        document.getElementById('product-modal').addEventListener('click', e => {
-            if (e.target.id === 'product-modal') closeModal();
-        });
-        
         // 初始化
-        loadData();
+        loadCategories();
     </script>
 </body>
 </html>
