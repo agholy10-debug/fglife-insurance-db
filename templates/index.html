@@ -377,12 +377,41 @@
                 <h1>🏦 遠雄人壽保險商品查詢系統</h1>
                 <p>共 <span id="total-count">0</span> 個商品 | 現售 + 停售完整收錄</p>
             </div>
-            <div style="display:flex; align-items:center; gap:10px;">
-                <span style="color:#64ffda;">👤 {{ current_user.username }}</span>
-                <a href="/logout" style="color:#ff6b6b; text-decoration:none; padding:8px 16px; border:1px solid #ff6b6b; border-radius:6px;">登出</a>
+            <div id="user-info" style="display:none; align-items:center; gap:10px;">
+                <span style="color:#64ffda;">👤 <span id="username-display"></span></span>
+                <button onclick="logout()" style="color:#ff6b6b; background:none; border:1px solid #ff6b6b; padding:8px 16px; border-radius:6px; cursor:pointer;">登出</button>
             </div>
         </div>
     </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://sb-publishable-oxx6od0qh3h-xdo-xwgmspe-q-sswio9u4.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNiLXB1Ymxpc2hhYmxlLW94eDZvZDBxaDNoLWRvLXh3Z21zcGUtcS1zc3dpbzluNCIsImlhdCI6MTY0NDM0OTIwMCwiZXhwIjoxOTU5OTM1MjAwfQ.xxxx';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        
+        async function checkAuth() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                window.location.href = 'login.html';
+                return;
+            }
+            // 從 email 取出使用者名稱
+            const email = session.user.email;
+            const username = email.split('@')[0];
+            document.getElementById('username-display').textContent = username;
+            document.getElementById('user-info').style.display = 'flex';
+        }
+        
+        async function logout() {
+            await supabase.auth.signOut();
+            localStorage.removeItem('fglife_session');
+            window.location.href = 'login.html';
+        }
+        
+        checkAuth();
+    </script>
     
     <div class="container">
         <div class="sidebar">
@@ -435,11 +464,21 @@
         
         // 載入分類統計
         async function loadCategories() {
-            const res = await fetch('/api/categories');
-            const data = await res.json();
+            const res = await fetch('./data/products.json');
+            const allProducts = await res.json();
             
-            document.getElementById('total-count').textContent = data.total;
-            document.getElementById('all-count').textContent = data.total;
+            // 統計分類
+            const stats = {};
+            allProducts.forEach(p => {
+                if (!stats[p.category]) {
+                    stats[p.category] = { 現售: { 主約: 0, 附約: 0 }, 停售: { 主約: 0, 附約: 0 } };
+                }
+                stats[p.category][p.status][p.type]++;
+            });
+            
+            const total = allProducts.length;
+            document.getElementById('total-count').textContent = total;
+            document.getElementById('all-count').textContent = total;
             
             const list = document.getElementById('category-list');
             const statsBar = document.getElementById('stats-bar');
@@ -447,21 +486,21 @@
             let html = `
                 <li class="category-item active" data-category="">
                     <span class="name">全部商品</span>
-                    <span class="count">${data.total}</span>
+                    <span class="count">${total}</span>
                 </li>
             `;
             
             let statsHtml = `
                 <div class="stat-item">
-                    <div class="number">${data.total}</div>
+                    <div class="number">${total}</div>
                     <div class="label">總商品數</div>
                 </div>
             `;
             
-            for (const [cat, counts] of Object.entries(data.stats)) {
+            for (const [cat, counts] of Object.entries(stats)) {
                 const 現售 = counts.現售.主約 + counts.現售.附約;
                 const 停售 = counts.停售.主約 + counts.停售.附約;
-                const total = 現售 + 停售;
+                const catTotal = 現售 + 停售;
                 
                 html += `
                     <li class="category-item" data-category="${cat}">
@@ -475,7 +514,7 @@
                 
                 statsHtml += `
                     <div class="stat-item">
-                        <div class="number">${total}</div>
+                        <div class="number">${catTotal}</div>
                         <div class="label">${cat}</div>
                     </div>
                 `;
@@ -490,25 +529,22 @@
                     document.querySelectorAll('.category-item').forEach(i => i.classList.remove('active'));
                     item.classList.add('active');
                     currentCategory = item.dataset.category;
-                    loadProducts();
+                    loadProducts(allProducts);
                 });
             });
         }
         
         // 載入商品列表
-        async function loadProducts() {
+        async function loadProducts(allProducts) {
             const grid = document.getElementById('products-grid');
             grid.innerHTML = '<div class="loading">載入中...</div>';
             
-            let url = '/api/products?';
-            if (currentCategory) url += `category=${encodeURIComponent(currentCategory)}&`;
+            if (!allProducts) {
+                const res = await fetch('./data/products.json');
+                allProducts = await res.json();
+            }
             
-            const searchValue = document.getElementById('search-input').value;
-            if (searchValue) url += `search=${encodeURIComponent(searchValue)}&`;
-            
-            const res = await fetch(url);
-            allProducts = await res.json();
-            
+            window.allProducts = allProducts;
             renderProducts();
         }
         
@@ -610,7 +646,6 @@
         
         // 初始化
         loadCategories();
-        loadProducts();
     </script>
 </body>
 </html>

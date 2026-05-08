@@ -22,108 +22,109 @@
             max-width: 400px;
             border: 1px solid rgba(255,255,255,0.1);
         }
-        .logo {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .logo h1 {
-            color: #64ffda;
-            font-size: 24px;
-            margin-bottom: 10px;
-        }
-        .logo p {
-            color: #8892b0;
-            font-size: 14px;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #ccd6f6;
-            font-size: 14px;
-        }
+        .logo { text-align: center; margin-bottom: 30px; }
+        .logo h1 { color: #64ffda; font-size: 24px; margin-bottom: 10px; }
+        .logo p { color: #8892b0; font-size: 14px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; color: #ccd6f6; font-size: 14px; }
         .form-group input {
-            width: 100%;
-            padding: 12px 16px;
+            width: 100%; padding: 12px 16px;
             border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 8px;
-            background: rgba(255,255,255,0.05);
-            color: #fff;
-            font-size: 16px;
-            transition: border-color 0.3s;
+            border-radius: 8px; background: rgba(255,255,255,0.05);
+            color: #fff; font-size: 16px;
         }
-        .form-group input:focus {
-            outline: none;
-            border-color: #64ffda;
-        }
+        .form-group input:focus { outline: none; border-color: #64ffda; }
         .btn {
-            width: 100%;
-            padding: 14px;
-            background: #64ffda;
-            color: #1a1a2e;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
+            width: 100%; padding: 14px; background: #64ffda; color: #1a1a2e;
+            border: none; border-radius: 8px; font-size: 16px; font-weight: 600;
+            cursor: pointer; transition: all 0.3s;
         }
-        .btn:hover {
-            background: #52e8c4;
-            transform: translateY(-2px);
-        }
+        .btn:hover { background: #52e8c4; transform: translateY(-2px); }
+        .btn:disabled { background: #666; cursor: not-allowed; }
         .error {
-            background: rgba(255,107,107,0.2);
-            color: #ff6b6b;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            text-align: center;
+            background: rgba(255,107,107,0.2); color: #ff6b6b;
+            padding: 12px; border-radius: 8px; margin-bottom: 20px;
+            font-size: 14px; text-align: center;
         }
-        .links {
-            text-align: center;
-            margin-top: 20px;
-            color: #8892b0;
-            font-size: 14px;
-        }
-        .links a {
-            color: #64ffda;
-            text-decoration: none;
-        }
-        .links a:hover {
-            text-decoration: underline;
-        }
+        .links { text-align: center; margin-top: 20px; color: #8892b0; font-size: 14px; }
+        .links a { color: #64ffda; text-decoration: none; }
+        .loading { text-align: center; color: #64ffda; padding: 20px; }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-    <div class="login-container">
+    <div class="login-container" id="login-box">
         <div class="logo">
             <h1>🏦 遠雄人壽</h1>
             <p>保險商品理賠查詢系統</p>
         </div>
-        
-        {% if error %}
-        <div class="error">{{ error }}</div>
-        {% endif %}
-        
-        <form method="POST">
+        <div id="error-msg" class="error" style="display:none;"></div>
+        <form id="login-form">
             <div class="form-group">
                 <label>帳號</label>
-                <input type="text" name="username" required placeholder="請輸入帳號">
+                <input type="text" id="username" required placeholder="請輸入帳號">
             </div>
             <div class="form-group">
                 <label>密碼</label>
-                <input type="password" name="password" required placeholder="請輸入密碼">
+                <input type="password" id="password" required placeholder="請輸入密碼">
             </div>
-            <button type="submit" class="btn">登入</button>
+            <button type="submit" class="btn" id="login-btn">登入</button>
         </form>
-        
         <div class="links">
-            <a href="{{ url_for('register') }}">還沒有帳號？註冊一個</a>
+            <a href="register.html">還沒有帳號？註冊一個</a>
         </div>
     </div>
+
+    <script>
+        // Supabase 設定
+        const SUPABASE_URL = 'https://sb-publishable-oxx6od0qh3h-xdo-xwgmspe-q-sswio9u4.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNiLXB1Ymxpc2hhYmxlLW94eDZvZDBxaDNoLWRvLXh3Z21zcGUtcS1zc3dpbzluNCIsImlhdCI6MTY0NDM0OTIwMCwiZXhwIjoxOTU5OTM1MjAwfQ.xxxx';
+        
+        // 初始化 Supabase
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // 檢查是否已登入
+        async function checkAuth() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+                window.location.href = 'index.html';
+            }
+        }
+
+        // 登入
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('login-btn');
+            const errorMsg = document.getElementById('error-msg');
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            btn.disabled = true;
+            btn.textContent = '登入中...';
+            errorMsg.style.display = 'none';
+
+            try {
+                // 用 email 格式登入（Supabase auth 使用 email）
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: username + '@fglife.com',
+                    password: password
+                });
+
+                if (error) throw error;
+
+                // 登入成功，存入 localStorage
+                localStorage.setItem('fglife_user', username);
+                localStorage.setItem('fglife_session', 'true');
+                window.location.href = 'index.html';
+            } catch (err) {
+                errorMsg.textContent = '帳號或密碼錯誤';
+                errorMsg.style.display = 'block';
+                btn.disabled = false;
+                btn.textContent = '登入';
+            }
+        });
+
+        checkAuth();
+    </script>
 </body>
 </html>
