@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>註冊 - 遠雄人壽保險商品查詢系統</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Microsoft JhengHei", sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .register-container {
+            background: rgba(0,0,0,0.3);
+            padding: 40px;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .logo { text-align: center; margin-bottom: 30px; }
+        .logo h1 { color: #64ffda; font-size: 24px; margin-bottom: 10px; }
+        .logo p { color: #8892b0; font-size: 14px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; color: #ccd6f6; font-size: 14px; }
+        .form-group input {
+            width: 100%; padding: 12px 16px;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px; background: rgba(255,255,255,0.05);
+            color: #fff; font-size: 16px;
+        }
+        .form-group input:focus { outline: none; border-color: #64ffda; }
+        .btn {
+            width: 100%; padding: 14px; background: #64ffda; color: #1a1a2e;
+            border: none; border-radius: 8px; font-size: 16px; font-weight: 600;
+            cursor: pointer; transition: all 0.3s;
+        }
+        .btn:hover { background: #52e8c4; transform: translateY(-2px); }
+        .btn:disabled { background: #666; cursor: not-allowed; }
+        .error {
+            background: rgba(255,107,107,0.2); color: #ff6b6b;
+            padding: 12px; border-radius: 8px; margin-bottom: 20px;
+            font-size: 14px; text-align: center;
+        }
+        .success {
+            background: rgba(74,222,128,0.2); color: #64ffda;
+            padding: 12px; border-radius: 8px; margin-bottom: 20px;
+            font-size: 14px; text-align: center;
+        }
+        .links { text-align: center; margin-top: 20px; color: #8892b0; font-size: 14px; }
+        .links a { color: #64ffda; text-decoration: none; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <div class="register-container">
+        <div class="logo">
+            <h1>🏦 遠雄人壽</h1>
+            <p>保險商品理賠查詢系統 - 會員註冊</p>
+        </div>
+        <div id="error-msg" class="error" style="display:none;"></div>
+        <div id="success-msg" class="success" style="display:none;"></div>
+        <form id="register-form">
+            <div class="form-group">
+                <label>帳號</label>
+                <input type="text" id="username" required placeholder="至少 3 個字元" minlength="3">
+            </div>
+            <div class="form-group">
+                <label>密碼</label>
+                <input type="password" id="password" required placeholder="至少 4 個字元" minlength="4">
+            </div>
+            <div class="form-group">
+                <label>確認密碼</label>
+                <input type="password" id="password2" required placeholder="請再次輸入密碼">
+            </div>
+            <button type="submit" class="btn" id="register-btn">註冊</button>
+        </form>
+        <div class="links">
+            <a href="login.html">已有帳號？登入</a>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://sb-publishable-oxx6od0qh3h-xdo-xwgmspe-q-sswio9u4.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNiLXB1Ymxpc2hhYmxlLW94eDZvZDBxaDNoLWRvLXh3Z21zcGUtcS1zc3dpbzluNCIsImlhdCI6MTY0NDM0OTIwMCwiZXhwIjoxOTU5OTM1MjAwfQ.xxxx';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('register-btn');
+            const errorMsg = document.getElementById('error-msg');
+            const successMsg = document.getElementById('success-msg');
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const password2 = document.getElementById('password2').value;
+
+            errorMsg.style.display = 'none';
+            successMsg.style.display = 'none';
+
+            if (username.length < 3) {
+                errorMsg.textContent = '帳號至少需要 3 個字元';
+                errorMsg.style.display = 'block';
+                return;
+            }
+            if (password.length < 4) {
+                errorMsg.textContent = '密碼至少需要 4 個字元';
+                errorMsg.style.display = 'block';
+                return;
+            }
+            if (password !== password2) {
+                errorMsg.textContent = '兩次密碼不一致';
+                errorMsg.style.display = 'block';
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = '註冊中...';
+
+            try {
+                // 建立 auth user
+                const { data, error } = await supabase.auth.signUp({
+                    email: username + '@fglife.com',
+                    password: password
+                });
+
+                if (error) throw error;
+
+                successMsg.textContent = '註冊成功！即將跳轉至登入頁...';
+                successMsg.style.display = 'block';
+                btn.textContent = '註冊成功';
+                
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 1500);
+            } catch (err) {
+                errorMsg.textContent = err.message || '註冊失敗';
+                errorMsg.style.display = 'block';
+                btn.disabled = false;
+                btn.textContent = '註冊';
+            }
+        });
+    </script>
+</body>
+</html>
