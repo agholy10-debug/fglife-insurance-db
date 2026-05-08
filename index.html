@@ -258,7 +258,20 @@
         .calc-example h5 { font-size: 12px; color: #64ffda; margin-bottom: 10px; }
         .calc-example .scenario { font-size: 12px; color: #aaa; margin-bottom: 10px; padding: 8px; background: rgba(0,0,0,0.2); border-radius: 6px; }
         .calc-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .calc-row:last-child { border-bottom: none; font-weight: bold; color: #64ffda; }
+        .calc-row.total { border-bottom: none; font-weight: bold; color: #64ffda; font-size: 14px; padding-top: 10px; }
+        .scenario-note { font-size: 11px; color: #8892b0; margin-top: 10px; padding-top: 8px; border-top: 1px dashed rgba(100,255,218,0.2); }
+        .calc-row.total span:last-child { color: #64ffda; }
+        
+        /* 涵蓋傷病標籤 */
+        .conditions-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+        .condition-tag { 
+            background: rgba(150, 100, 255, 0.15); 
+            color: #b264ff; 
+            padding: 5px 12px; 
+            border-radius: 15px; 
+            font-size: 12px;
+            border: 1px solid rgba(150, 100, 255, 0.3);
+        }
         
         /* 警告提示 */
         .warning-box {
@@ -707,32 +720,99 @@
                     html += '</div></div>';
                 }
                 
-                // 理算範例
+                // 理算範例（根據不同類型顯示不同情境）
                 if (claims.claims_calculation) {
                     const calc = claims.claims_calculation;
                     html += `
                         <div class="calc-example">
                             <h5>💡 理算範例</h5>
-                            <div class="scenario">
-                                <strong>情境：</strong>住院10天（5天一般病房 + 5天加護病房），闌尾切除術
-                            </div>
                     `;
                     
                     if (calc.type === '實支實付') {
                         html += `
+                            <div class="scenario">
+                                <strong>情境：</strong>住院10天（5天一般病房 + 5天加護病房），闌尾切除術，手術費用收據 80,000元
+                            </div>
                             <div class="calc-row"><span>每日病房費用保險金</span><span>1,000 × 10天 = 10,000</span></div>
                             <div class="calc-row"><span>加護病房費用保險金</span><span>3,000 × 5天 = 15,000</span></div>
                             <div class="calc-row"><span>手術費用保險金（闌尾切除術60%）</span><span>50,000 × 60% = 30,000</span></div>
                             <div class="calc-row"><span>出院在家療癒保險金</span><span>600 × 10天 = 6,000</span></div>
-                            <div class="calc-row"><span>合計理賠</span><span>61,000元</span></div>
+                            <div class="calc-row total"><span>合計理賠</span><span>61,000元</span></div>
+                            <div class="scenario-note">💰 說明：副本收據理賠，花費範圍內實支實付</div>
+                        `;
+                    } else if (calc.type === '日額型') {
+                        html += `
+                            <div class="scenario">
+                                <strong>情境：</strong>住院10天（5天一般病房 + 5天加護病房），闌尾切除術
+                            </div>
+                            <div class="calc-row"><span>住院醫療保險金（30天內1倍）</span><span>1,000 × 10天 = 10,000</span></div>
+                            <div class="calc-row"><span>加護病房暨燒燙傷中心（2倍）</span><span>1,000 × 2倍 × 5天 = 10,000</span></div>
+                            <div class="calc-row"><span>住院醫療補助保險金（50%）</span><span>1,000 × 50% × 10天 = 5,000</span></div>
+                            <div class="calc-row"><span>住院前後門診保險金</span><span>1,000 × 25% × 7天 = 1,750</span></div>
+                            <div class="calc-row"><span>手術費用保險金（闌尾切除術8倍）</span><span>1,000 × 8倍 = 8,000</span></div>
+                            <div class="calc-row total"><span>合計理賠</span><span>34,750元</span></div>
+                            <div class="scenario-note">💰 說明：日額型為固定金額理赔，不看實際花費</div>
+                        `;
+                    } else if (calc.type === '手術倍數型') {
+                        html += `
+                            <div class="scenario">
+                                <strong>情境：</strong>門診接受闌尾切除術
+                            </div>
+                            <div class="calc-row"><span>門診手術保險金（闌尾切除術8倍）</span><span>1,000 × 8倍 = 8,000</span></div>
+                            <div class="calc-row total"><span>合計理賠</span><span>8,000元</span></div>
+                            <div class="scenario-note">💰 說明：手術倍數型理赔，手術項目決定倍數</div>
+                        `;
+                    } else if (calc.type.includes('癌症一次給付')) {
+                        html += `
+                            <div class="scenario">
+                                <strong>情境：</strong>確診肺癌（初次罹癌），住院15天接受手術及化療
+                            </div>
+                            <div class="calc-row"><span>初次罹癌保險金（確診一次給付）</span><span>1,000 × 100倍 = 100,000</span></div>
+                            <div class="calc-row"><span>癌症住院醫療保險金</span><span>1,000 × 1% × 15天 = 1,500</span></div>
+                            <div class="calc-row"><span>癌症手術保險金（假設20倍）</span><span>1,000 × 20倍 = 20,000</span></div>
+                            <div class="calc-row"><span>癌症化學治療保險金（2次化療）</span><span>1,000 × 1倍 × 2 = 2,000</span></div>
+                            <div class="calc-row total"><span>合計理賠</span><span>123,500元</span></div>
+                            <div class="scenario-note">💰 說明：癌症險確診即給100倍+後續治療費用</div>
+                        `;
+                    } else if (calc.type.includes('一次給付型')) {
+                        html += `
+                            <div class="scenario">
+                                <strong>情境：</strong>確診急性心肌梗塞（七大重疾之一）
+                            </div>
+                            <div class="calc-row"><span>重大疾病保險金（確診一次給付）</span><span>1,000 × 100倍 = 100,000</span></div>
+                            <div class="calc-row total"><span>合計理賠</span><span>100,000元</span></div>
+                            <div class="scenario-note">💰 說明：一次給付型，確診即給固定倍數</div>
+                        `;
+                    } else if (calc.type === '長照型') {
+                        html += `
+                            <div class="scenario">
+                                <strong>情境：</strong>符合長期照顧狀態（意識障礙、無法自行翻身）
+                            </div>
+                            <div class="calc-row"><span>一次性長期照顧保險金</span><span>1,000 × 30倍 = 30,000</span></div>
+                            <div class="calc-row"><span>每月長期照顧保險金（持續符合狀態）</span><span>1,000 × 30日 = 30,000/月</span></div>
+                            <div class="calc-row total"><span>首月理賠</span><span>60,000元</span></div>
+                            <div class="scenario-note">💰 說明：長照型需符合6項長照狀態之一，持續理赔</div>
+                        `;
+                    } else if (calc.type.includes('保本')) {
+                        html += `
+                            <div class="scenario">
+                                <strong>情境：</strong>住院10天，闌尾切除術，繳費期滿
+                            </div>
+                            <div class="calc-row"><span>住院醫療保險金</span><span>1,000 × 10天 = 10,000</span></div>
+                            <div class="calc-row"><span>加護病房保險金</span><span>1,000 × 2倍 × 5天 = 10,000</span></div>
+                            <div class="calc-row"><span>手術費用保險金（8倍）</span><span>1,000 × 8倍 = 8,000</span></div>
+                            <div class="calc-row"><span>滿期保險金（退還保費）</span><span>已繳保費 × 1.06倍</span></div>
+                            <div class="calc-row total"><span>醫療理賠</span><span>28,000元 + 保本</span></div>
+                            <div class="scenario-note">💰 說明：保本型除了醫療理赔，期滿還退還保費</div>
                         `;
                     } else {
                         html += `
+                            <div class="scenario">
+                                <strong>情境：</strong>住院10天，闌尾切除術
+                            </div>
                             <div class="calc-row"><span>住院醫療保險金</span><span>1,000 × 10天 = 10,000</span></div>
-                            <div class="calc-row"><span>加護病房醫療保險金</span><span>1,000 × 2倍 × 5天 = 10,000</span></div>
-                            <div class="calc-row"><span>住院醫療補助保險金</span><span>1,000 × 50% × 10天 = 5,000</span></div>
-                            <div class="calc-row"><span>手術費用保險金（闌尾切除術8倍）</span><span>1,000 × 8倍 = 8,000</span></div>
-                            <div class="calc-row"><span>合計理赔</span><span>33,000元</span></div>
+                            <div class="calc-row"><span>手術費用保險金（8倍）</span><span>1,000 × 8倍 = 8,000</span></div>
+                            <div class="calc-row total"><span>合計理賠</span><span>18,000元</span></div>
                         `;
                     }
                     
@@ -781,6 +861,32 @@
                     }
                 }
                 html += '</tbody></table></div>';
+            }
+            
+            // 涵蓋傷病/疾病（特定傷病、重大疾病、癌症險）
+            if (claims.covered_conditions) {
+                html += `
+                    <div class="detail-section">
+                        <h4><span class="icon">📋</span>涵蓋傷病項目</h4>
+                        <div class="conditions-grid">
+                `;
+                claims.covered_conditions.forEach(condition => {
+                    html += `<span class="condition-tag">${condition}</span>`;
+                });
+                html += '</div></div>';
+            }
+            
+            // 長照狀態
+            if (claims.long_term_care_conditions) {
+                html += `
+                    <div class="detail-section">
+                        <h4><span class="icon">🛏️</span>長期照顧狀態（符合任一項即可）</h4>
+                        <div class="conditions-grid">
+                `;
+                claims.long_term_care_conditions.forEach(condition => {
+                    html += `<span class="condition-tag">${condition}</span>`;
+                });
+                html += '</div></div>';
             }
             
             // 下載連結
