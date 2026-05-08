@@ -83,21 +83,6 @@
             font-size: 11px;
             color: #8892b0;
         }
-        .category-item .type-badge {
-            font-size: 10px;
-            padding: 2px 6px;
-            border-radius: 4px;
-            margin-left: 5px;
-        }
-        .type-badge.實支實付 { background: rgba(100, 255, 218, 0.2); color: #64ffda; }
-        .type-badge.日額型 { background: rgba(255, 215, 0, 0.2); color: #ffd700; }
-        .type-badge.手術 { background: rgba(255, 107, 107, 0.2); color: #ff6b6b; }
-        .type-badge.癌症 { background: rgba(255, 100, 150, 0.2); color: #ff64b4; }
-        .type-badge.重大疾病 { background: rgba(150, 100, 255, 0.2); color: #b264ff; }
-        .type-badge.長照 { background: rgba(100, 200, 255, 0.2); color: #64c8ff; }
-        .type-badge.意外 { background: rgba(255, 165, 100, 0.2); color: #ffa564; }
-        .type-badge.海外 { background: rgba(100, 255, 200, 0.2); color: #64ffc8; }
-        .type-badge.其他 { background: rgba(200, 200, 200, 0.2); color: #ccc; }
         
         /* 主內容區 */
         .main { flex: 1; padding: 25px 35px; overflow-y: auto; max-height: calc(100vh - 80px); }
@@ -330,6 +315,7 @@
         .type-tag.投資型 { background: rgba(150, 150, 255, 0.15); color: #9696ff; }
         .type-tag.團險 { background: rgba(255, 150, 100, 0.15); color: #ff9664; }
         .type-tag.醫療保本 { background: rgba(100, 255, 150, 0.15); color: #64ff96; }
+        .type-tag.其他 { background: rgba(200, 200, 200, 0.15); color: #ccc; }
     </style>
 </head>
 <body>
@@ -363,16 +349,6 @@
             </div>
             
             <div class="category-section">
-                <div class="category-title">依類型</div>
-                <ul class="category-list" id="type-list">
-                    <li class="category-item active" data-type="all">
-                        <span>全部類型</span>
-                        <span class="count" id="type-count-all">0</span>
-                    </li>
-                </ul>
-            </div>
-            
-            <div class="category-section">
                 <div class="category-title">理賠類型</div>
                 <ul class="category-list" id="claim-type-list">
                     <li class="category-item active" data-claim="all">
@@ -387,7 +363,7 @@
                         <span>日額型</span>
                         <span class="count" id="claim-count-日額型">0</span>
                     </li>
-                    <li class="category-item" data-claim="手術醫療">
+                    <li class="category-item" data-claim="手術">
                         <span>手術醫療</span>
                         <span class="count" id="claim-count-手術">0</span>
                     </li>
@@ -447,7 +423,6 @@
         let allProducts = [];
         let claimsDb = {};
         let currentStatus = 'all';
-        let currentType = 'all';
         let currentClaimType = 'all';
         let currentFilter = 'all';
         
@@ -503,29 +478,6 @@
             document.getElementById('claim-count-重大疾病').textContent = claimCounts['重大疾病'];
             document.getElementById('claim-count-長照').textContent = claimCounts['長照'];
             document.getElementById('claim-count-意外').textContent = claimCounts['意外'];
-            
-            // 類型統計
-            const typeCounts = {};
-            allProducts.forEach(p => {
-                const cat = p.category || '其他';
-                typeCounts[cat] = (typeCounts[cat] || 0) + 1;
-            });
-            
-            let typeListHtml = `
-                <li class="category-item ${currentType === 'all' ? 'active' : ''}" data-type="all">
-                    <span>全部類型</span>
-                    <span class="count">${總數}</span>
-                </li>
-            `;
-            for (const [type, count] of Object.entries(typeCounts)) {
-                typeListHtml += `
-                    <li class="category-item ${currentType === type ? 'active' : ''}" data-type="${type}">
-                        <span>${type}</span>
-                        <span class="count">${count}</span>
-                    </li>
-                `;
-            }
-            document.getElementById('type-list').innerHTML = typeListHtml;
         }
         
         // 取得商品代碼
@@ -545,7 +497,8 @@
             }
             
             // 回傳預設資訊
-            const cat = allProducts.find(p => p.filename === filename)?.category || '其他';
+            const prod = allProducts.find(p => p.filename === filename);
+            const cat = prod?.category || '其他';
             return {
                 name: filename.replace('.pdf', ''),
                 type: cat,
@@ -579,11 +532,6 @@
             // 狀態篩選
             if (currentStatus !== 'all') {
                 filtered = filtered.filter(p => p.status === currentStatus);
-            }
-            
-            // 類型篩選
-            if (currentType !== 'all') {
-                filtered = filtered.filter(p => p.category === currentType);
             }
             
             // 理賠類型篩選
@@ -633,6 +581,7 @@
                 const claims = getClaimsInfo(p.filename);
                 const typeClass = getTypeClass(claims.type || p.category);
                 const code = getProductCode(p.filename);
+                const displayName = p.filename.replace('.pdf','').substring(code.length + 1);
                 
                 // 取得理賠項目預覽
                 let benefitsPreview = '';
@@ -644,10 +593,10 @@
                 }
                 
                 return `
-                    <div class="product-card" onclick="showProductDetail('${filenameToId(p.filename)}')">
+                    <div class="product-card" onclick="showProductDetail('${code}')">
                         <div class="header">
                             <div class="name">
-                                ${p.filename.replace('.pdf','').substring(code.length + 1)}
+                                ${displayName}
                                 <span class="code">${code}</span>
                             </div>
                             <span class="status-tag ${p.status}">${p.status}</span>
@@ -665,34 +614,24 @@
             }).join('');
         }
         
-        // 轉換檔名為ID
-        function filenameToId(filename) {
-            return filename.replace(/[^a-zA-Z0-9]/g, '_');
-        }
-        
         // 顯示商品詳情
-        function showProductDetail(productId) {
-            const filename = productId.replace(/_/g, '.pdf').replace(/_/g, ' ');
-            const product = allProducts.find(p => filenameToId(p.filename) === productId || p.filename.includes(productId.replace(/_/g, '_')));
-            
+        function showProductDetail(productCode) {
+            // 找到商品
+            const product = allProducts.find(p => getProductCode(p.filename) === productCode);
             if (!product) {
-                // 嘗試模糊匹配
-                const actualProduct = allProducts.find(p => p.filename.includes(productId.split('_')[0]));
-                if (!actualProduct) {
-                    alert('找不到商品資料');
-                    return;
-                }
+                console.error('找不到商品:', productCode);
+                return;
             }
             
-            const p = actualProduct || product;
-            const claims = getClaimsInfo(p.filename);
+            const claims = getClaimsInfo(product.filename);
             const modal = document.getElementById('product-modal');
             const body = document.getElementById('modal-body');
             const title = document.getElementById('modal-title');
             
+            const typeClass = getTypeClass(claims.type || product.category);
             title.innerHTML = `
-                <span class="type-tag ${getTypeClass(claims.type)}">${claims.type || p.category}</span>
-                ${p.filename.replace('.pdf','')}
+                <span class="type-tag ${typeClass}">${claims.type || product.category}</span>
+                ${product.filename.replace('.pdf','')}
             `;
             
             let html = `
@@ -701,19 +640,19 @@
                     <div class="info-grid">
                         <div class="info-item">
                             <div class="label">商品代碼</div>
-                            <div class="value">${getProductCode(p.filename)}</div>
+                            <div class="value">${getProductCode(product.filename)}</div>
                         </div>
                         <div class="info-item">
                             <div class="label">商品類型</div>
-                            <div class="value">${p.category}</div>
+                            <div class="value">${product.category}</div>
                         </div>
                         <div class="info-item">
                             <div class="label">承保型態</div>
-                            <div class="value">${p.type}</div>
+                            <div class="value">${product.type}</div>
                         </div>
                         <div class="info-item">
                             <div class="label">銷售狀態</div>
-                            <div class="value" style="color: ${p.status === '現售' ? '#64ffda' : '#ff6b6b'}">${p.status}</div>
+                            <div class="value" style="color: ${product.status === '現售' ? '#64ffda' : '#ff6b6b'}">${product.status}</div>
                         </div>
                     </div>
                 </div>
@@ -801,7 +740,7 @@
                 }
                 
                 // 警告
-                if (calc?.type === '實支實付') {
+                if (claims.claims_calculation?.type === '實支實付') {
                     html += `
                         <div class="warning-box">
                             <strong>⚠️ 重要提醒：</strong>實支實付型商品需檢附收據正本申請理賠，副本可能無法受理。
@@ -879,16 +818,6 @@
                 document.querySelectorAll('#status-list .category-item').forEach(i => i.classList.remove('active'));
                 item.classList.add('active');
                 currentStatus = item.dataset.filter;
-                renderProducts();
-            }
-        });
-        
-        document.getElementById('type-list').addEventListener('click', e => {
-            const item = e.target.closest('.category-item');
-            if (item) {
-                document.querySelectorAll('#type-list .category-item').forEach(i => i.classList.remove('active'));
-                item.classList.add('active');
-                currentType = item.dataset.type;
                 renderProducts();
             }
         });
