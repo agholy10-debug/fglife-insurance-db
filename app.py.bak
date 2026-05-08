@@ -153,8 +153,39 @@ def login():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    """註冊頁面 - 已關閉"""
-    return render_template('register_closed.html'), 403
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    
+    error = None
+    if request.method == 'POST':
+        username = request.form.get('username', '').strip()
+        password = request.form.get('password', '')
+        password2 = request.form.get('password2', '')
+        
+        if not username or not password:
+            error = '請填寫帳號和密碼'
+        elif len(username) < 3:
+            error = '帳號至少需要 3 個字元'
+        elif len(password) < 4:
+            error = '密碼至少需要 4 個字元'
+        elif password != password2:
+            error = '兩次密碼不一致'
+        else:
+            users = load_users()
+            if username in users:
+                error = '此帳號已有人使用'
+            else:
+                from datetime import datetime
+                users[username] = {
+                    'username': username,
+                    'password': password,
+                    'created_at': datetime.now().strftime('%Y-%m-%d %H:%M')
+                }
+                save_users(users)
+                flash('註冊成功！請登入', 'success')
+                return redirect(url_for('login'))
+    
+    return render_template('register.html', error=error)
 
 @app.route('/logout')
 @login_required
